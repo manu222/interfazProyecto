@@ -2,7 +2,6 @@ import streamlit as st
 from datetime import datetime
 
 # Configuración de la página
-st.set_page_config(page_title="Interfaz ML", layout="wide")
 st.set_page_config(
     page_title="Interfaz Proyecto",  # Título de la pestaña
     page_icon="./cerebro.png",           # Puedes usar un emoji o una ruta de imagen
