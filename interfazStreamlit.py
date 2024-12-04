@@ -3,7 +3,8 @@ from datetime import datetime
 
 # Configuración de la página
 st.set_page_config(page_title="Interfaz ML", layout="wide")
-
+#logo brain icon
+st.image("./cerebro.png", width=100)
 # Pestañas: Entrenamiento y Predicción
 tabs = st.tabs(["Entrenamiento", "Predicción"])
 
