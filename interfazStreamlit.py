@@ -1,12 +1,24 @@
 import streamlit as st
 from datetime import datetime
+from streamlit_extras.grid import grid
+import pandas as pd
+import numpy as np
+
+
 
 # Configuración de la página
 st.set_page_config(
     page_title="Interfaz Proyecto",  # Título de la pestaña
-    page_icon="./cerebro.png",           # Puedes usar un emoji o una ruta de imagen
+    page_icon="./cerebro.png",       # Ruta al favicon
     layout="wide"
 )
+
+
+
+
+# Estilo de la página
+st.title("Proyecto de Entrenamiento y Predicción")
+st.markdown("---")
 
 
 # Pestañas: Entrenamiento y Predicción
@@ -14,50 +26,57 @@ tabs = st.tabs(["Entrenamiento", "Predicción"])
 
 with tabs[0]:  # Pestaña de Entrenamiento
     st.header("Entrenamiento")
+    st.markdown("### Configuración de Entrenamiento")
+
+    random_df = pd.DataFrame(np.random.randn(20, 3), columns=["a", "b", "c"])
+
+    my_grid = grid([2,1], [2,1], [2,1], 1,[2,1],1,1, vertical_align='center')
+
+    # Row 1:
+    file_data_a = my_grid.text_input("Fuente de datos A", placeholder="Ruta")
+    uploaded_file_a = my_grid.file_uploader("Subir archivo A", type=["csv", "txt", "xlsx", "json"])
+    if uploaded_file_a is not None:
+        if uploaded_file_a.name.split('.')[-1]=="csv":
+            dataframe = pd.read_csv(uploaded_file_a)
+            st.write(dataframe)
+            file_data_a = uploaded_file_a.name
+    file_data_b = my_grid.text_input("Fuente de datos B", placeholder="Ruta")
+    uploaded_file_b = my_grid.file_uploader("Subir archivo B", type=["csv", "txt", "xlsx", "json"])
     
-    # Selección de fuentes de datos
-    col1, col2 = st.columns([4, 1])
-    with col1:
-        file_data_a = st.text_input("Fuente de datos A", placeholder="Ruta")
-    with col2:
-        st.button("Abrir A")
     
-    col3, col4 = st.columns([4, 1])
-    with col3:
-        file_data_b = st.text_input("Fuente de datos B", placeholder="Ruta")
-    with col4:
-        st.button("Abrir B")
+    # Row 2:
+    #TODO: Guardar el modelo en una ruta específica
+    model_path = my_grid.text_input("Ruta para guardar", placeholder="Carpeta1/Carpeta2/Fichero.ext")
+    my_grid.button("Guardar Modelo")
     
-    # Selección de algoritmo
-    st.subheader("Seleccionar Algoritmo:")
-    algorithm = st.selectbox("Algoritmo", ["Árbol de decisión", "Regresión logística", "SVM"])
     
-    # Vista previa
-    st.subheader("VISTA PREVIA:")
-    st.text(f"Fecha: {datetime.now().strftime('%d/%m/%Y')}")
-    st.text(f"Ejemplares: 1,646")
-    st.text(f"Tiempo de entrenamiento: 00:01:27")
-    st.text(f"Algoritmo seleccionado: {algorithm}")
+    # Row 3:
+    # Selección de algoritmo en una nueva fila
+    my_grid.markdown("### Selección de Algoritmo")
+    algorithm = my_grid.selectbox("Algoritmo", ["Árbol de decisión", "Regresión logística", "SVM"])
+
+    # Ejecución del modelo
+    if my_grid.button("Ejecutar"):
+        #TODO: Entrenar el modelo con los datos 
+        my_grid.success("¡Entrenamiento completado con éxito!")
     
-    # Botón de ejecución
-    if st.button("Ejecutar"):
-        st.success("¡Entrenamiento completado con éxito!")
+    # Vista previa de datos
+    #TODO: Mostrar una vista previa de los datos
+    my_grid.markdown("### Vista Previa")
+    my_grid.info(
+        f"**Fecha:** {datetime.now().strftime('%d/%m/%Y')}\n\n"
+        f"**Ejemplares:** 1,646\n\n"
+        f"**Tiempo de entrenamiento:** 00:01:27\n\n"
+        f"**Algoritmo seleccionado:** {algorithm}"
+    )
+
+
+    # Mostrar resultados en una cuadrícula
+    my_grid.markdown("### Resultados")
+    result_cols = grid(2, vertical_align="center")  # Crear cuadrícula de resultados
     
-    # Resultado con gráficos
-    st.subheader("Resultado:")
-    col_result_1, col_result_2 = st.columns([3, 1])
-    with col_result_1:
-        st.write("Error medio: ???")
-    with col_result_2:
-        st.image("https://via.placeholder.com/150", caption="Gráfico de resultados")
+
     
-    # Guardar modelo
-    st.subheader("Guardar modelo:")
-    col_save_1, col_save_2 = st.columns([4, 1])
-    with col_save_1:
-        model_path = st.text_input("Ruta para guardar", placeholder="Carpeta1/Carpeta2/Fichero.ext")
-    with col_save_2:
-        st.button("Guardar")
 
 with tabs[1]:  # Pestaña de Predicción
     st.header("Predicción")
