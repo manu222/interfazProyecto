@@ -1,9 +1,10 @@
+
 import streamlit as st
 from datetime import datetime
 from streamlit_extras.grid import grid
 import pandas as pd
 import numpy as np
-
+from tkinter import Tk, filedialog
 
 
 # Configuración de la página
@@ -13,12 +14,36 @@ st.set_page_config(
     layout="wide"
 )
 
+def seleccionar_archivo():
+    """
+    Abre un cuadro de diálogo para seleccionar un archivo y devuelve su ruta completa.
+    """
+    root = Tk()
+    root.withdraw()  # Oculta la ventana principal de Tkinter
+    root.attributes('-topmost', True)  # Asegura que el cuadro de diálogo esté al frente
+    ruta_archivo = filedialog.askopenfilename()  # Abrir cuadro de diálogo para seleccionar archivo
+    root.destroy()  # Cerrar la ventana de Tkinter
+    return ruta_archivo
 
-
+def seleccionar_carpeta():
+    """
+    Abre un cuadro de diálogo para seleccionar una carpeta y devuelve su ruta completa.
+    """
+    root = Tk()
+    root.withdraw()  # Oculta la ventana principal de Tkinter
+    root.attributes('-topmost', True)  # Asegura que el cuadro de diálogo esté al frente
+    ruta_carpeta = filedialog.askdirectory()  # Abrir cuadro de diálogo para seleccionar carpeta
+    root.destroy()  # Cerrar la ventana de Tkinter
+    return ruta_carpeta
 
 # Estilo de la página
 st.title("Proyecto de Entrenamiento y Predicción")
 st.markdown("---")
+
+if 'ruta_seleccionada' not in st.session_state:
+    st.session_state['ruta_seleccionada'] = None
+if 'carpeta_seleccionada' not in st.session_state:
+    st.session_state['carpeta_seleccionada'] = None
 
 
 # Pestañas: Entrenamiento y Predicción
@@ -27,27 +52,35 @@ tabs = st.tabs(["Entrenamiento", "Predicción"])
 with tabs[0]:  # Pestaña de Entrenamiento
     st.header("Entrenamiento")
     st.markdown("### Configuración de Entrenamiento")
-
-    random_df = pd.DataFrame(np.random.randn(20, 3), columns=["a", "b", "c"])
-
-    my_grid = grid([2,1], [2,1], [2,1], 1,[2,1],1,1, vertical_align='center')
+    
+    my_grid = grid(1,1,1,1,1,1,1,1,1,1,1, vertical_align='center')
 
     # Row 1:
-    file_data_a = my_grid.text_input("Fuente de datos A", placeholder="Ruta")
-    uploaded_file_a = my_grid.file_uploader("Subir archivo A", type=["csv", "txt", "xlsx", "json"])
-    if uploaded_file_a is not None:
-        if uploaded_file_a.name.split('.')[-1]=="csv":
-            dataframe = pd.read_csv(uploaded_file_a)
-            st.write(dataframe)
-            file_data_a = uploaded_file_a.name
-    file_data_b = my_grid.text_input("Fuente de datos B", placeholder="Ruta")
-    uploaded_file_b = my_grid.file_uploader("Subir archivo B", type=["csv", "txt", "xlsx", "json"])
+   
+    # uploaded_file_a = my_grid.file_uploader("Subir archivo A", type=["csv", "txt", "xlsx", "json"])
+    if my_grid.button("Seleccionar archivo con Tkinter"):
+        st.session_state.ruta_seleccionada = seleccionar_archivo()
+        if st.session_state.ruta_seleccionada:
+            #Text label
+            st.session_state.ruta_seleccionada ="Archivo : "+ st.session_state.ruta_seleccionada
+    
+    if st.session_state.ruta_seleccionada:
+        my_grid.text(st.session_state.ruta_seleccionada)
+            
     
     
     # Row 2:
     #TODO: Guardar el modelo en una ruta específica
-    model_path = my_grid.text_input("Ruta para guardar", placeholder="Carpeta1/Carpeta2/Fichero.ext")
-    my_grid.button("Guardar Modelo")
+    
+    if my_grid.button("Guardar Modelo"):
+        st.session_state.carpeta_seleccionada = seleccionar_carpeta()
+        if st.session_state.carpeta_seleccionada:
+            #Text label
+            st.session_state.carpeta_seleccionada = "Carpeta : "+st.session_state.carpeta_seleccionada
+    
+    if st.session_state.carpeta_seleccionada:
+        my_grid.text(st.session_state.carpeta_seleccionada)
+        
     
     
     # Row 3:
@@ -58,14 +91,17 @@ with tabs[0]:  # Pestaña de Entrenamiento
     # Ejecución del modelo
     if my_grid.button("Ejecutar"):
         #TODO: Entrenar el modelo con los datos 
+        st.session_state["uploaded_file_path_a"] = "adasdsa"
         my_grid.success("¡Entrenamiento completado con éxito!")
+    
     
     # Vista previa de datos
     #TODO: Mostrar una vista previa de los datos
     my_grid.markdown("### Vista Previa")
     my_grid.info(
         f"**Fecha:** {datetime.now().strftime('%d/%m/%Y')}\n\n"
-        f"**Ejemplares:** 1,646\n\n"
+        #Rows del dataset
+        f"**Número de filas:** 100\n\n"
         f"**Tiempo de entrenamiento:** 00:01:27\n\n"
         f"**Algoritmo seleccionado:** {algorithm}"
     )
